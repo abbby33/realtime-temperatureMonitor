@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #temperature-list {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        li {
+            list-style-type: none;
+        }
+        .divider {
+            border-top: 2px solid #ccc;
+            margin: 10px 0;
+            font-style: italic;
+            color: #999;
+        }
+    </style>
+    <script>
+        async function fetchTemperature() {
+            try {
+                const response = await fetch('/temperature');
+                const data = await response.json();
+
+                const temperatureList = document.getElementById('temperature-list');
+                let html = '';
+                
+                data.temperatures.forEach(entry => {
+                    if (entry.temperature === '---') {
+                        html += '<div class="divider">--- New Session ---</div>';
+                    } else {
+                        html += `<li>${entry.timestamp}: ${entry.temperature.toFixed(2)} °C</li>`;
+                    }
+                });
+
+                temperatureList.innerHTML = html;
+            } catch (error) {
+                console.error('Error fetching temperature:', error);
+            }
+        }
+
+        setInterval(fetchTemperature, 1000); // 每秒更新一次数据
+    </script>
+</head>
+<body>
+    <h1>Real Time Temperature Monitor</h1>
+    <ul id="temperature-list">Loading...</ul>
+</body>
+</html>
